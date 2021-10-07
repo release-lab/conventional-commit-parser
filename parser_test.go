@@ -18,6 +18,31 @@ func TestParse(t *testing.T) {
 		footer []Footer
 	}{
 		{
+			name: "revert commit",
+			args: args{
+				message: `Revert "deprecated"
+This reverts commit bf08694.`,
+			},
+			want: Message{
+				Header: `Revert "deprecated"`,
+				Body:   "This reverts commit bf08694.",
+				Footer: []string{},
+			},
+			header: Header{
+				Type:      "revert",
+				Scope:     "",
+				Subject:   "deprecated",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:     "revert",
+					Title:   "This reverts commit bf08694.",
+					Content: "bf08694",
+				},
+			},
+		},
+		{
 			name: "common commit",
 			args: args{
 				message: "this is a commit message",

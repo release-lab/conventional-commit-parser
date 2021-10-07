@@ -32,6 +32,7 @@ var (
 	HEADER_PATTERN        = regexp.MustCompile(`^(?:fixup!\s*)?(\w*)(\(([\w\$\.\*/-]*)\))?(!?):\s(.*)$`)
 	FOOTER_PATTERN        = regexp.MustCompile(`^([\w\s\-]+):\s(.*)$`)
 	REVERT_HEADER_PATTERN = regexp.MustCompile(`^(?i)revert\s(.*)$`)
+	REVERT_BODY_PATTERN   = regexp.MustCompile(`^(?i)This\sreverts\scommit\s(\w+)\.?$`)
 )
 
 func splitToLines(text string) []string {
@@ -91,6 +92,25 @@ func (m Message) GetFooter() []Footer {
 		}
 
 		footer.Content = strings.TrimSpace(strings.Join(contents, "\n"))
+
+		footers = append(footers, footer)
+	}
+
+	header := m.GetHeader()
+
+	if header.Type == "revert" {
+		matcher := REVERT_BODY_PATTERN.FindStringSubmatch(m.Body)
+		content := ""
+
+		if len(matcher) > 0 {
+			content = matcher[1]
+		}
+
+		footer := Footer{
+			Tag:     "revert",
+			Title:   m.Body,
+			Content: content,
+		}
 
 		footers = append(footers, footer)
 	}
@@ -170,6 +190,7 @@ func Parse(message string) Message {
 
 		// The second line should be blank
 		if index == 1 {
+			body = append(body, line)
 			index++
 			continue
 		}
