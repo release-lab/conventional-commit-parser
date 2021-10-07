@@ -37,7 +37,54 @@ This reverts commit bf08694.`,
 			footer: []Footer{
 				{
 					Tag:     "revert",
-					Title:   "This reverts commit bf08694.",
+					Title:   "deprecated",
+					Content: "bf08694",
+				},
+			},
+		},
+		{
+			name: "revert commit with other body",
+			args: args{
+				message: `Revert "deprecated"
+This reverts commit bf08694.
+
+Fixing these warnings, unfortunately also means, that hot code
+(which reloads a shared library during runtime) can not use V
+constants, because the private static C variables in the shared
+library will not be initialized by _vinit(), which is only called
+by the main V program.
+
+For example in examples/hot_reload/bounce.v, using 'gx.blue',
+defined as:
+'    blue   = Color { r:   0, g:   0, b: 255 }'
+... will instead use a const with all 0 fields (i.e. a black color).`,
+			},
+			want: Message{
+				Header: `Revert "deprecated"`,
+				Body: `This reverts commit bf08694.
+
+Fixing these warnings, unfortunately also means, that hot code
+(which reloads a shared library during runtime) can not use V
+constants, because the private static C variables in the shared
+library will not be initialized by _vinit(), which is only called
+by the main V program.
+
+For example in examples/hot_reload/bounce.v, using 'gx.blue',
+defined as:
+'    blue   = Color { r:   0, g:   0, b: 255 }'
+... will instead use a const with all 0 fields (i.e. a black color).`,
+				Footer: []string{},
+			},
+			header: Header{
+				Type:      "revert",
+				Scope:     "",
+				Subject:   "deprecated",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:     "revert",
+					Title:   "deprecated",
 					Content: "bf08694",
 				},
 			},
