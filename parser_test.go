@@ -406,8 +406,8 @@ app.use({})
 
 			assert.Equal(t, tt.want, msg)
 
-			assert.Equal(t, tt.header, msg.GetHeader())
-			assert.Equal(t, tt.footer, msg.GetFooter())
+			assert.Equal(t, tt.header, msg.ParseHeader())
+			assert.Equal(t, tt.footer, msg.ParseFooter())
 		})
 	}
 }

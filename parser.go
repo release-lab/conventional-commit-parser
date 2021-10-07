@@ -39,7 +39,7 @@ func splitToLines(text string) []string {
 	return strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
 }
 
-func (m Message) GetHeader() Header {
+func (m Message) ParseHeader() Header {
 	headerMatchers := HEADER_PATTERN.FindStringSubmatch(m.Header)
 	revertHeaderMatchers := REVERT_HEADER_PATTERN.FindStringSubmatch(m.Header)
 	header := Header{}
@@ -63,7 +63,7 @@ func (m Message) GetHeader() Header {
 	return header
 }
 
-func (m Message) GetFooter() []Footer {
+func (m Message) ParseFooter() []Footer {
 	footers := make([]Footer, 0)
 
 	for _, m := range m.Footer {
@@ -96,7 +96,7 @@ func (m Message) GetFooter() []Footer {
 		footers = append(footers, footer)
 	}
 
-	header := m.GetHeader()
+	header := m.ParseHeader()
 
 	if header.Type == "revert" {
 		matcher := REVERT_BODY_PATTERN.FindStringSubmatch(m.Body)
@@ -118,8 +118,8 @@ func (m Message) GetFooter() []Footer {
 	return footers
 }
 
-func (m Message) GetFooterField(tags ...string) *Footer {
-	footers := m.GetFooter()
+func (m Message) GetFooterByField(tags ...string) *Footer {
+	footers := m.ParseFooter()
 
 	for _, tag := range tags {
 		for _, f := range footers {
