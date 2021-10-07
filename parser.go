@@ -34,6 +34,10 @@ var (
 	REVERT_HEADER_PATTERN = regexp.MustCompile(`^(?i)revert\s(.*)$`)
 )
 
+func splitToLines(text string) []string {
+	return strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
+}
+
 func (m Message) GetHeader() Header {
 	headerMatchers := HEADER_PATTERN.FindStringSubmatch(m.Header)
 	revertHeaderMatchers := REVERT_HEADER_PATTERN.FindStringSubmatch(m.Header)
@@ -62,7 +66,7 @@ func (m Message) GetFooter() []Footer {
 	footers := make([]Footer, 0)
 
 	for _, m := range m.Footer {
-		lines := strings.Split(strings.ReplaceAll(m, "\r\n", "\n"), "\n")
+		lines := splitToLines(m)
 
 		footer := Footer{}
 
@@ -146,7 +150,7 @@ func ParseMessage(message string) Message {
 		footer []string = make([]string, 0)
 	)
 
-	lines := strings.Split(message, "\n")
+	lines := splitToLines(message)
 	index := 0
 
 	for {

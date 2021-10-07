@@ -1,0 +1,12 @@
+{
+  "go.addTags": {
+    "tags": "json",
+    "options": "json=omitempty",
+    "promptForTags": false,
+    "transform": "snakecase"
+  },
+  "go.lintTool": "golangci-lint",
+  "go.buildFlags": [],
+  "go.testFlags": ["-v"],
+  "go.toolsEnvVars": {}
+}
