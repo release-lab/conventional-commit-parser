@@ -30,7 +30,7 @@ type Footer struct {
 var (
 	EMPTY_LINE_PATTERN    = regexp.MustCompile(`^\s*$`)
 	HEADER_PATTERN        = regexp.MustCompile(`^(?:fixup!\s*)?(\w*)(\(([\w\$\.\*/-]*)\))?(!?):\s(.*)$`)
-	FOOTER_PATTERN        = regexp.MustCompile(`^([\w\s\-]+):\s(.*)$`)
+	FOOTER_PATTERN        = regexp.MustCompile(`^([\w\s\-]+):(.*)$`)
 	REVERT_HEADER_PATTERN = regexp.MustCompile(`^(?i)revert\s(.*)$`)
 	REVERT_BODY_PATTERN   = regexp.MustCompile(`(?i)This\sreverts\scommit\s(\w+)\.?`)
 )
@@ -82,8 +82,8 @@ func (m Message) GetFooter() []Footer {
 					footer.Tag = ""
 					footer.Title = line
 				} else {
-					footer.Tag = matcher[1]
-					footer.Title = matcher[2]
+					footer.Tag = strings.TrimSpace(matcher[1])
+					footer.Title = strings.TrimSpace(matcher[2])
 				}
 				continue lineLoop
 			} else {
@@ -197,47 +197,40 @@ func Parse(message string) Message {
 
 		previousLine := lines[index-1]
 
-		// parse body
-		if !FOOTER_PATTERN.MatchString(line) {
+		// if is a footer start
+		if FOOTER_PATTERN.MatchString(line) && (EMPTY_LINE_PATTERN.MatchString(previousLine) || FOOTER_PATTERN.MatchString(previousLine)) {
+			footerContent := []string{line}
+
+			index++
+
+			// if this line is last line
+			if index >= len(lines) {
+				footer = append(footer, strings.TrimSpace(strings.Join(footerContent, "\n")))
+				continue
+			}
+
+		innerLoop:
+			for {
+				if index >= len(lines) {
+					footer = append(footer, strings.TrimSpace(strings.Join(footerContent, "\n")))
+					break innerLoop
+				}
+
+				line := lines[index]
+
+				if !FOOTER_PATTERN.MatchString(line) {
+					footerContent = append(footerContent, line)
+					index++
+					continue innerLoop
+				} else {
+					footer = append(footer, strings.TrimSpace(strings.Join(footerContent, "\n")))
+					break innerLoop
+				}
+			}
+		} else {
 			body = append(body, line)
 			index++
 			continue
-		} else {
-			// if previous line is blank. then should be body block end
-			// or previous line is a footer
-			if EMPTY_LINE_PATTERN.MatchString(previousLine) || FOOTER_PATTERN.MatchString(previousLine) {
-				footerContent := []string{line}
-
-				index++
-
-				// if this line is last line
-				if index >= len(lines) {
-					footer = append(footer, strings.TrimSpace(strings.Join(footerContent, "\n")))
-					continue
-				}
-
-			innerLoop:
-				for {
-					if index >= len(lines) {
-						break innerLoop
-					}
-
-					line := lines[index]
-
-					if !FOOTER_PATTERN.MatchString(line) {
-						footerContent = append(footerContent, line)
-						index++
-						continue innerLoop
-					} else {
-						footer = append(footer, strings.TrimSpace(strings.Join(footerContent, "\n")))
-						break innerLoop
-					}
-				}
-			} else {
-				body = append(body, line)
-				index++
-				continue
-			}
 		}
 	}
 

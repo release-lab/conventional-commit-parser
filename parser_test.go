@@ -126,6 +126,72 @@ defined as:
 			footer: []Footer{},
 		},
 		{
+			name: "common breaking change",
+			args: args{
+				message: `feat(BREAKING): remove hashURL function in template render
+
+BREAKING CHANGE:
+
+before
+
+'''bash
+{{ hashURL .Hash}}
+{{ hashURL .RevertCommitHash }}
+'''
+
+after
+
+'''bash
+{{ .HashURL }}
+{{ .RevertCommitHashURL }}
+'''`,
+			},
+			want: Message{
+				Header: "feat(BREAKING): remove hashURL function in template render",
+				Body:   "",
+				Footer: []string{`BREAKING CHANGE:
+
+before
+
+'''bash
+{{ hashURL .Hash}}
+{{ hashURL .RevertCommitHash }}
+'''
+
+after
+
+'''bash
+{{ .HashURL }}
+{{ .RevertCommitHashURL }}
+'''`},
+			},
+			header: Header{
+				Type:      "feat",
+				Scope:     "BREAKING",
+				Subject:   "remove hashURL function in template render",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:   "BREAKING CHANGE",
+					Title: "",
+					Content: `before
+
+'''bash
+{{ hashURL .Hash}}
+{{ hashURL .RevertCommitHash }}
+'''
+
+after
+
+'''bash
+{{ .HashURL }}
+{{ .RevertCommitHashURL }}
+'''`,
+				},
+			},
+		},
+		{
 			name: "Commit message with description and breaking change footer",
 			args: args{
 				message: `feat: allow provided config object to extend other configs
@@ -283,14 +349,12 @@ incoming responses other than from latest request.
 Remove timeouts which were used to mitigate the racing issue but are
 obsolete now.`,
 				Footer: []string{
-					`BREAKING CHANGE: use '.use()' instea of '.load()'
-
-before:
+					`BREAKING CHANGE: use '.use()' instea of '.load()'`,
+					`before:
 '''javascript
 app.load({})
-'''
-
-after:
+'''`,
+					`after:
 '''javascript
 app.use({})
 '''`,
@@ -306,15 +370,21 @@ app.use({})
 			},
 			footer: []Footer{
 				{
-					Tag:   "BREAKING CHANGE",
-					Title: "use '.use()' instea of '.load()'",
-					Content: `before:
-'''javascript
+					Tag:     "BREAKING CHANGE",
+					Title:   "use '.use()' instea of '.load()'",
+					Content: "",
+				},
+				{
+					Tag:   "before",
+					Title: "",
+					Content: `'''javascript
 app.load({})
-'''
-
-after:
-'''javascript
+'''`,
+				},
+				{
+					Tag:   "after",
+					Title: "",
+					Content: `'''javascript
 app.use({})
 '''`,
 				},
