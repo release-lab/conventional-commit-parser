@@ -31,7 +31,7 @@ var (
 	EMPTY_LINE_PATTERN    = regexp.MustCompile(`^\s*$`)
 	HEADER_PATTERN        = regexp.MustCompile(`^(?:fixup!\s*)?(\w*)(\(([\w\$\.\*/-]*)\))?(!?):\s(.*)$`)
 	FOOTER_PATTERN        = regexp.MustCompile(`^([\w\s\-]+):\s(.*)$`)
-	REVERT_HEADER_PATTERN = regexp.MustCompile(`^(?i)revert\s+(.*)$`)
+	REVERT_HEADER_PATTERN = regexp.MustCompile(`^(?i)revert\s(.*)$`)
 )
 
 func (m Message) GetHeader() Header {
