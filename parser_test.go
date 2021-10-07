@@ -16,6 +16,7 @@ func TestParse(t *testing.T) {
 		want   Message
 		header Header
 		footer []Footer
+		only   bool
 	}{
 		{
 			name: "revert commit",
@@ -39,6 +40,48 @@ This reverts commit bf08694.`,
 					Tag:     "revert",
 					Title:   "deprecated",
 					Content: "bf08694",
+				},
+			},
+		},
+		{
+			name: "simple breaking change",
+			only: true,
+			args: args{
+				message: `feat: rename tag:N to @N
+
+BREAKING CHANGE: rename
+
+'''diff
+- tag:0~tag:1
++ @0~@1
+'''`,
+			},
+			want: Message{
+				Header: `feat: rename tag:N to @N`,
+				Body:   "",
+				Footer: []string{
+					`BREAKING CHANGE: rename
+
+'''diff
+- tag:0~tag:1
++ @0~@1
+'''`,
+				},
+			},
+			header: Header{
+				Type:      "feat",
+				Scope:     "",
+				Subject:   "rename tag:N to @N",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:   "BREAKING CHANGE",
+					Title: "rename",
+					Content: `'''diff
+- tag:0~tag:1
++ @0~@1
+'''`,
 				},
 			},
 		},
@@ -402,6 +445,7 @@ app.use({})
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+
 			msg := Parse(tt.args.message)
 
 			assert.Equal(t, tt.want, msg)
