@@ -142,7 +142,7 @@ app.use({})
 Reviewed-by: Z
 Refs: #123
 */
-func ParseMessage(message string) Message {
+func Parse(message string) Message {
 	var (
 		msg    Message
 		header string   = ""

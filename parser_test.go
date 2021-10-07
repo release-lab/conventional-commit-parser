@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParseMessage(t *testing.T) {
+func TestParse(t *testing.T) {
 	type args struct {
 		message string
 	}
@@ -260,7 +260,7 @@ app.use({})
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			msg := ParseMessage(tt.args.message)
+			msg := Parse(tt.args.message)
 
 			assert.Equal(t, tt.want, msg)
 
