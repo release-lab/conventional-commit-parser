@@ -17,7 +17,7 @@ package main
 
 import (
   "fmt"
-  "release-lab/conventional-commit-parser"
+  "github.com/release-lab/conventional-commit-parser"
 )
 
 func main() {
