@@ -123,7 +123,7 @@ func (m Message) GetFooterField(tags ...string) *Footer {
 
 	for _, tag := range tags {
 		for _, f := range footers {
-			if strings.ToLower(f.Tag) == tag {
+			if strings.EqualFold(f.Tag, tag) {
 				return &f
 			}
 		}
