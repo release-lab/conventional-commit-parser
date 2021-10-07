@@ -16,6 +16,7 @@ func TestParse(t *testing.T) {
 		want   Message
 		header Header
 		footer []Footer
+		Closes []string
 		only   bool
 	}{
 		{
@@ -84,6 +85,35 @@ BREAKING CHANGE: rename
 '''`,
 				},
 			},
+		},
+		{
+			name: "close issue",
+			only: true,
+			args: args{
+				message: `feat: support xxx
+
+Closes #1, #2, #3
+`,
+			},
+			want: Message{
+				Header: `feat: support xxx`,
+				Body:   "",
+				Footer: []string{"Closes #1, #2, #3"},
+			},
+			header: Header{
+				Type:      "feat",
+				Scope:     "",
+				Subject:   "support xxx",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:     "Closes",
+					Title:   "#1, #2, #3",
+					Content: ``,
+				},
+			},
+			Closes: []string{"#1", "#2", "#3"},
 		},
 		{
 			name: "revert commit with other body",
@@ -452,6 +482,10 @@ app.use({})
 
 			assert.Equal(t, tt.header, msg.ParseHeader())
 			assert.Equal(t, tt.footer, msg.ParseFooter())
+
+			if tt.Closes != nil && len(tt.Closes) != 0 {
+				assert.Equal(t, tt.Closes, msg.GetCloses())
+			}
 		})
 	}
 }
