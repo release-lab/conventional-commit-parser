@@ -8,6 +8,25 @@
 
 This is a parser for [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
 
+```bash
+go get -u github.com/release-lab/conventional-commit-parser
+```
+
+```go
+package main
+
+import (
+  "fmt"
+  "release-lab/conventional-commit-parser"
+)
+
+func main() {
+  result := conventionalcommitparser.Parse("feat: this is a commit message")
+
+  fmt.Printf("%+v\n", result)
+}
+```
+
 ### License
 
 The [Anti-996 License](LICENSE)
