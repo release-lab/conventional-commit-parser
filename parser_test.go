@@ -489,3 +489,85 @@ app.use({})
 		})
 	}
 }
+
+func Test_isFooterParagraph(t *testing.T) {
+	type args struct {
+		txt string
+	}
+	tests := []struct {
+		name string
+		args args
+		want bool
+	}{
+		{
+			name: "invalid footer paragraph",
+			args: args{
+				txt: "hello world",
+			},
+			want: false,
+		},
+		{
+			name: "invalid footer paragraph",
+			args: args{
+				txt: "helloworld",
+			},
+			want: false,
+		},
+		{
+			name: "tag footer paragraph",
+			args: args{
+				txt: "Refs: #2",
+			},
+			want: true,
+		},
+		{
+			name: "tag with - footer paragraph",
+			args: args{
+				txt: "Refs-With: #2",
+			},
+			want: true,
+		},
+		{
+			name: "tag with multiple - footer paragraph",
+			args: args{
+				txt: "Refs-With-User: #2",
+			},
+			want: true,
+		},
+		{
+			name: "hash footer paragraph",
+			args: args{
+				txt: "Close #1, #2",
+			},
+			want: true,
+		},
+		{
+			name: "invalid hash footer paragraph without # prefix",
+			args: args{
+				txt: "Close 1, #2",
+			},
+			want: false,
+		},
+		{
+			name: "BREAKING CHANGE footer paragraph",
+			args: args{
+				txt: "BREAKING CHANGE: this is a breaking change",
+			},
+			want: true,
+		},
+		{
+			name: "invalid BREAKING CHANGES footer paragraph",
+			args: args{
+				txt: "BREAKING CHANGES: this is a breaking change",
+			},
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := isFooterParagraph(tt.args.txt); got != tt.want {
+				t.Errorf("isFooterParagraph() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
