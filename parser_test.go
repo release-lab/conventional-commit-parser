@@ -668,3 +668,43 @@ func Test_paseFooterParagraph(t *testing.T) {
 		})
 	}
 }
+
+func Test_splitToLines(t *testing.T) {
+	type args struct {
+		text string
+	}
+	tests := []struct {
+		name string
+		args args
+		want []string
+	}{
+		{
+			name: "single line",
+			args: args{
+				text: "single line",
+			},
+			want: []string{"single line"},
+		},
+		{
+			name: "multiple line",
+			args: args{
+				text: "line1\nline2",
+			},
+			want: []string{"line1", "line2"},
+		},
+		{
+			name: "multiple line2",
+			args: args{
+				text: "line1\r\nline2",
+			},
+			want: []string{"line1", "line2"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := splitToLines(tt.args.text); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("splitToLines() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
