@@ -45,6 +45,57 @@ This reverts commit bf08694.`,
 			},
 		},
 		{
+			name: "revert commit with header type",
+			args: args{
+				message: `revert: change tittle
+This reverts commit bf08694.`,
+			},
+			want: Message{
+				Header: `revert: change tittle`,
+				Body:   "This reverts commit bf08694.",
+				Footer: []string{},
+			},
+			header: Header{
+				Type:      "revert",
+				Scope:     "",
+				Subject:   "change tittle",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:     "revert",
+					Title:   "change tittle",
+					Content: "bf08694",
+				},
+			},
+		},
+		{
+			name: "revert commit with header type but no valid body",
+			args: args{
+				message: `revert: change tittle
+
+revert it`,
+			},
+			want: Message{
+				Header: `revert: change tittle`,
+				Body:   "revert it",
+				Footer: []string{},
+			},
+			header: Header{
+				Type:      "revert",
+				Scope:     "",
+				Subject:   "change tittle",
+				Important: false,
+			},
+			footer: []Footer{
+				{
+					Tag:     "revert",
+					Title:   "change tittle",
+					Content: "",
+				},
+			},
+		},
+		{
 			name: "simple breaking change",
 			only: true,
 			args: args{
