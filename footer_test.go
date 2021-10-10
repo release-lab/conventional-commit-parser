@@ -1,8 +1,9 @@
 package conventionalcommitparser
 
 import (
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func Test_paseFooterParagraph(t *testing.T) {
@@ -57,6 +58,13 @@ func Test_paseFooterParagraph(t *testing.T) {
 			want: Footer{Tag: "Close", Title: "#1, #2"},
 		},
 		{
+			name: "hash footer paragraph with multiple spaces",
+			args: args{
+				txt: "Close   #1, #2  ",
+			},
+			want: Footer{Tag: "Close", Title: "#1, #2"},
+		},
+		{
 			name: "invalid hash footer paragraph with # prefix",
 			args: args{
 				txt: "#Close #1, #2",
@@ -87,9 +95,7 @@ func Test_paseFooterParagraph(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := paseFooterParagraph(tt.args.txt); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("paseFooterParagraph() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, paseFooterParagraph(tt.args.txt))
 		})
 	}
 }
@@ -127,9 +133,79 @@ func Test_splitToLines(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := splitToLines(tt.args.text); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("splitToLines() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, splitToLines(tt.args.text))
+		})
+	}
+}
+
+func TestParseFooter(t *testing.T) {
+	type args struct {
+		txt string
+	}
+	tests := []struct {
+		name string
+		args args
+		want Footer
+	}{
+		{
+			name: "invalid footer",
+			args: args{
+				txt: "invalid footer",
+			},
+			want: Footer{
+				Tag:     "",
+				Title:   "invalid footer",
+				Content: "",
+			},
+		},
+		{
+			name: "tag: footer",
+			args: args{
+				txt: "tag: footer",
+			},
+			want: Footer{
+				Tag:     "tag",
+				Title:   "footer",
+				Content: "",
+			},
+		},
+		{
+			name: "Closes #1",
+			args: args{
+				txt: "Closes #1",
+			},
+			want: Footer{
+				Tag:     "Closes",
+				Title:   "#1",
+				Content: "",
+			},
+		},
+		{
+			name: "Closes #1, #2, #3",
+			args: args{
+				txt: "Closes #1, #2, #3",
+			},
+			want: Footer{
+				Tag:     "Closes",
+				Title:   "#1, #2, #3",
+				Content: "",
+			},
+		},
+		{
+			name: "Closes   #1, #2, #3  ",
+			args: args{
+				txt: "Closes   #1, #2, #3  ",
+			},
+			want: Footer{
+				Tag:     "Closes",
+				Title:   "#1, #2, #3",
+				Content: "",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, ParseFooter(tt.args.txt))
 		})
 	}
 }

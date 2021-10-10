@@ -31,27 +31,7 @@ func (m Message) ParseFooter() []Footer {
 	footers := make([]Footer, 0)
 
 	for _, m := range m.Footer {
-		lines := splitToLines(m)
-
-		footer := Footer{}
-
-		contents := make([]string, 0)
-
-	lineLoop:
-		for index, line := range lines {
-			if index == 0 {
-				f := paseFooterParagraph(line)
-				footer.Tag = f.Tag
-				footer.Title = f.Title
-				continue lineLoop
-			} else {
-				contents = append(contents, line)
-			}
-		}
-
-		footer.Content = strings.TrimSpace(strings.Join(contents, "\n"))
-
-		footers = append(footers, footer)
+		footers = append(footers, ParseFooter(m))
 	}
 
 	header := m.ParseHeader()

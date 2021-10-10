@@ -13,8 +13,8 @@ type Footer struct {
 
 var (
 	FOOTER_TAG_PATTERN             = regexp.MustCompile(`(?i)^([a-z]+(-[a-z]+)*):\s?(.*)$`)
-	FOOTER_HASH_PATTERN            = regexp.MustCompile(`^(?i)^([a-z][a-z]+)\s(((,\s*)?#\d+(,\s)?)+)$`)
-	FOOTER_BREAKING_CHANGE_PATTERN = regexp.MustCompile(`^(BREAKING\sCHANGE):\s?(.*)$`)
+	FOOTER_HASH_PATTERN            = regexp.MustCompile(`^(?i)^([\w\-]+)\s+(#.*)`)
+	FOOTER_BREAKING_CHANGE_PATTERN = regexp.MustCompile(`^(BREAKING\sCHANGE):\s*(.*)$`)
 )
 
 func paseFooterParagraph(txt string) Footer {
@@ -55,4 +55,26 @@ func isFooterParagraph(txt string) bool {
 	}
 
 	return false
+}
+
+func ParseFooter(txt string) Footer {
+	lines := splitToLines(txt)
+
+	footer := Footer{}
+
+	contents := make([]string, 0)
+
+lineLoop:
+	for index, line := range lines {
+		if index == 0 {
+			footer = paseFooterParagraph(line)
+			continue lineLoop
+		} else {
+			contents = append(contents, line)
+		}
+	}
+
+	footer.Content = strings.TrimSpace(strings.Join(contents, "\n"))
+
+	return footer
 }
