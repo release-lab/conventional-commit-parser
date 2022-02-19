@@ -15,8 +15,8 @@ type Message struct {
 }
 
 var (
-	EMPTY_LINE_PATTERN  = regexp.MustCompile(`^\s*$`)
-	REVERT_BODY_PATTERN = regexp.MustCompile(`(?i)This\sreverts\scommit\s(\w+)\.?`)
+	emptyLinePattern  = regexp.MustCompile(`^\s*$`)
+	revertBodyPattern = regexp.MustCompile(`(?i)This\sreverts\scommit\s(\w+)\.?`)
 )
 
 func splitToLines(text string) []string {
@@ -24,20 +24,20 @@ func splitToLines(text string) []string {
 }
 
 func (m Message) ParseHeader() Header {
-	return ParseHeader(m.Header)
+	return parseHeader(m.Header)
 }
 
 func (m Message) ParseFooter() []Footer {
 	footers := make([]Footer, 0)
 
 	for _, m := range m.Footer {
-		footers = append(footers, ParseFooter(m))
+		footers = append(footers, parseFooter(m))
 	}
 
 	header := m.ParseHeader()
 
 	if header.Type == "revert" {
-		matcher := REVERT_BODY_PATTERN.FindStringSubmatch(m.Body)
+		matcher := revertBodyPattern.FindStringSubmatch(m.Body)
 		content := ""
 
 		if len(matcher) > 0 {
@@ -159,7 +159,7 @@ func Parse(message string) Message {
 		previousLine := lines[index-1]
 
 		// if is a footer start
-		if isFooterParagraph(line) && (EMPTY_LINE_PATTERN.MatchString(previousLine) || isFooterParagraph(previousLine)) {
+		if isFooterParagraph(line) && (emptyLinePattern.MatchString(previousLine) || isFooterParagraph(previousLine)) {
 			footerContent := []string{line}
 
 			index++

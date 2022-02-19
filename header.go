@@ -6,21 +6,26 @@ import (
 )
 
 type Header struct {
+	raw       string
 	Type      string
 	Scope     string
 	Subject   string
 	Important bool
 }
 
+func (h *Header) String() string {
+	return h.raw
+}
+
 var (
-	HEADER_PATTERN        = regexp.MustCompile(`^(?i)([\s\w-]*)(\((.*)\))?(!?):\s+(.*)$`)
-	REVERT_HEADER_PATTERN = regexp.MustCompile(`^(?i)revert\s(.*)$`)
+	headerPattern       = regexp.MustCompile(`^(?i)([\s\w-]*)(\((.*)\))?(!?):\s+(.*)$`)
+	revertHeaderPattern = regexp.MustCompile(`^(?i)revert\s(.*)$`)
 )
 
-func ParseHeader(txt string) Header {
-	headerMatchers := HEADER_PATTERN.FindStringSubmatch(txt)
-	revertHeaderMatchers := REVERT_HEADER_PATTERN.FindStringSubmatch(txt)
-	header := Header{}
+func parseHeader(txt string) Header {
+	headerMatchers := headerPattern.FindStringSubmatch(txt)
+	revertHeaderMatchers := revertHeaderPattern.FindStringSubmatch(txt)
+	header := Header{raw: txt}
 
 	if len(headerMatchers) != 0 { // conventional commit
 		header.Type = strings.TrimSpace(strings.ToLower(headerMatchers[1]))

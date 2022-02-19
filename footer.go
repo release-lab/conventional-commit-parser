@@ -12,17 +12,17 @@ type Footer struct {
 }
 
 var (
-	FOOTER_TAG_PATTERN             = regexp.MustCompile(`(?i)^([a-z]+(-[a-z]+)*):\s?(.*)$`)
-	FOOTER_HASH_PATTERN            = regexp.MustCompile(`^(?i)^([\w\-]+)\s+(#.*)`)
-	FOOTER_BREAKING_CHANGE_PATTERN = regexp.MustCompile(`^(BREAKING\sCHANGE):\s*(.*)$`)
+	footerTagPattern            = regexp.MustCompile(`(?i)^([a-z]+(-[a-z]+)*):\s?(.*)$`)
+	footerHashPattern           = regexp.MustCompile(`^(?i)^([\w\-]+)\s+(#.*)`)
+	footerBreakingChangePattern = regexp.MustCompile(`^(BREAKING\sCHANGE):\s*(.*)$`)
 )
 
 func paseFooterParagraph(txt string) Footer {
 	footer := Footer{}
 
-	tagMatcher := FOOTER_TAG_PATTERN.FindStringSubmatch(txt)
-	breakingChangeMatcher := FOOTER_BREAKING_CHANGE_PATTERN.FindStringSubmatch(txt)
-	hashTagMatcher := FOOTER_HASH_PATTERN.FindStringSubmatch(txt)
+	tagMatcher := footerTagPattern.FindStringSubmatch(txt)
+	breakingChangeMatcher := footerBreakingChangePattern.FindStringSubmatch(txt)
+	hashTagMatcher := footerHashPattern.FindStringSubmatch(txt)
 
 	if len(breakingChangeMatcher) != 0 {
 		footer.Tag = strings.TrimSpace(breakingChangeMatcher[1])
@@ -42,22 +42,22 @@ func paseFooterParagraph(txt string) Footer {
 }
 
 func isFooterParagraph(txt string) bool {
-	if FOOTER_BREAKING_CHANGE_PATTERN.MatchString(txt) {
+	if footerBreakingChangePattern.MatchString(txt) {
 		return true
 	}
 
-	if FOOTER_TAG_PATTERN.MatchString(txt) {
+	if footerTagPattern.MatchString(txt) {
 		return true
 	}
 
-	if FOOTER_HASH_PATTERN.MatchString(txt) {
+	if footerHashPattern.MatchString(txt) {
 		return true
 	}
 
 	return false
 }
 
-func ParseFooter(txt string) Footer {
+func parseFooter(txt string) Footer {
 	lines := splitToLines(txt)
 
 	footer := Footer{}

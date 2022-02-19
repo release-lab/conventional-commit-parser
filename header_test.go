@@ -119,7 +119,7 @@ func TestParseHeader(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ParseHeader(tt.args.txt); !reflect.DeepEqual(got, tt.want) {
+			if got := parseHeader(tt.args.txt); !reflect.DeepEqual(got, tt.want) {
 				assert.Equal(t, tt.want, got)
 			}
 		})
