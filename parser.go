@@ -9,6 +9,7 @@ import (
 )
 
 type Message struct {
+	raw    string
 	Header string
 	Body   string
 	Footer []string
@@ -23,11 +24,11 @@ func splitToLines(text string) []string {
 	return strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n")
 }
 
-func (m Message) ParseHeader() Header {
+func (m *Message) ParseHeader() Header {
 	return parseHeader(m.Header)
 }
 
-func (m Message) ParseFooter() []Footer {
+func (m *Message) ParseFooter() []Footer {
 	footers := make([]Footer, 0)
 
 	for _, m := range m.Footer {
@@ -56,7 +57,7 @@ func (m Message) ParseFooter() []Footer {
 	return footers
 }
 
-func (m Message) GetCloses() []string {
+func (m *Message) GetCloses() []string {
 	footer := m.GetFooterByField("Close", "close", "Closes", "closes", "Fix", "fix", "Fixes", "fixes")
 
 	closes := make([]string, 0)
@@ -79,7 +80,7 @@ func (m Message) GetCloses() []string {
 	return closes
 }
 
-func (m Message) GetFooterByField(tags ...string) *Footer {
+func (m *Message) GetFooterByField(tags ...string) *Footer {
 	footers := m.ParseFooter()
 
 	for _, tag := range tags {
@@ -91,6 +92,10 @@ func (m Message) GetFooterByField(tags ...string) *Footer {
 	}
 
 	return nil
+}
+
+func (m *Message) String() string {
+	return m.raw
 }
 
 /**
@@ -123,7 +128,7 @@ app.use({})
 Reviewed-by: Z
 Refs: #123
 */
-func Parse(message string) Message {
+func Parse(message string) *Message {
 	var (
 		msg    Message
 		header string   = ""
@@ -195,9 +200,10 @@ func Parse(message string) Message {
 		}
 	}
 
+	msg.raw = message
 	msg.Header = header
 	msg.Body = strings.TrimSpace(strings.Join(body, "\n"))
 	msg.Footer = footer
 
-	return msg
+	return &msg
 }
