@@ -9,7 +9,6 @@ import (
 )
 
 type Message struct {
-	raw    string
 	Header string
 	Body   string
 	Footer []string
@@ -92,10 +91,6 @@ func (m *Message) GetFooterByField(tags ...string) *Footer {
 	}
 
 	return nil
-}
-
-func (m *Message) String() string {
-	return m.raw
 }
 
 /**
@@ -200,7 +195,6 @@ func Parse(message string) *Message {
 		}
 	}
 
-	msg.raw = message
 	msg.Header = header
 	msg.Body = strings.TrimSpace(strings.Join(body, "\n"))
 	msg.Footer = footer

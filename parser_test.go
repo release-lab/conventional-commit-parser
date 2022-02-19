@@ -13,7 +13,7 @@ func TestParse(t *testing.T) {
 	tests := []struct {
 		name   string
 		args   args
-		want   Message
+		want   *Message
 		header Header
 		footer []Footer
 		Closes []string
@@ -25,7 +25,7 @@ func TestParse(t *testing.T) {
 				message: `Revert "deprecated"
 This reverts commit bf08694.`,
 			},
-			want: Message{
+			want: &Message{
 				Header: `Revert "deprecated"`,
 				Body:   "This reverts commit bf08694.",
 				Footer: []string{},
@@ -50,7 +50,7 @@ This reverts commit bf08694.`,
 				message: `revert: change tittle
 This reverts commit bf08694.`,
 			},
-			want: Message{
+			want: &Message{
 				Header: `revert: change tittle`,
 				Body:   "This reverts commit bf08694.",
 				Footer: []string{},
@@ -76,7 +76,7 @@ This reverts commit bf08694.`,
 
 revert it`,
 			},
-			want: Message{
+			want: &Message{
 				Header: `revert: change tittle`,
 				Body:   "revert it",
 				Footer: []string{},
@@ -108,7 +108,7 @@ BREAKING CHANGE: rename
 + @0~@1
 '''`,
 			},
-			want: Message{
+			want: &Message{
 				Header: `feat: rename tag:N to @N`,
 				Body:   "",
 				Footer: []string{
@@ -146,7 +146,7 @@ BREAKING CHANGE: rename
 Closes #1, #2, #3
 `,
 			},
-			want: Message{
+			want: &Message{
 				Header: `feat: support xxx`,
 				Body:   "",
 				Footer: []string{"Closes #1, #2, #3"},
@@ -183,7 +183,7 @@ defined as:
 '    blue   = Color { r:   0, g:   0, b: 255 }'
 ... will instead use a const with all 0 fields (i.e. a black color).`,
 			},
-			want: Message{
+			want: &Message{
 				Header: `Revert "deprecated"`,
 				Body: `This reverts commit bf08694.
 
@@ -218,7 +218,7 @@ defined as:
 			args: args{
 				message: "this is a commit message",
 			},
-			want: Message{
+			want: &Message{
 				Header: "this is a commit message",
 				Body:   "",
 				Footer: []string{},
@@ -236,7 +236,7 @@ defined as:
 			args: args{
 				message: "this is a commit message\n\nthis is commit body",
 			},
-			want: Message{
+			want: &Message{
 				Header: "this is a commit message",
 				Body:   "this is commit body",
 				Footer: []string{},
@@ -270,7 +270,7 @@ after
 {{ .RevertCommitHashURL }}
 '''`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "feat(BREAKING): remove hashURL function in template render",
 				Body:   "",
 				Footer: []string{`BREAKING CHANGE:
@@ -322,7 +322,7 @@ after
 
 BREAKING CHANGE: 'extends' key in config file is now used for extending other config files`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "feat: allow provided config object to extend other configs",
 				Body:   "",
 				Footer: []string{"BREAKING CHANGE: 'extends' key in config file is now used for extending other config files"},
@@ -346,7 +346,7 @@ BREAKING CHANGE: 'extends' key in config file is now used for extending other co
 			args: args{
 				message: `refactor!: drop support for Node 6`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "refactor!: drop support for Node 6",
 				Body:   "",
 				Footer: []string{},
@@ -364,7 +364,7 @@ BREAKING CHANGE: 'extends' key in config file is now used for extending other co
 			args: args{
 				message: `refactor(runtime)!: drop support for Node 6`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "refactor(runtime)!: drop support for Node 6",
 				Body:   "",
 				Footer: []string{},
@@ -384,7 +384,7 @@ BREAKING CHANGE: 'extends' key in config file is now used for extending other co
 
 BREAKING CHANGE: refactor to use JavaScript features not available in Node 6.`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "refactor!: drop support for Node 6",
 				Body:   "",
 				Footer: []string{"BREAKING CHANGE: refactor to use JavaScript features not available in Node 6."},
@@ -408,7 +408,7 @@ BREAKING CHANGE: refactor to use JavaScript features not available in Node 6.`,
 			args: args{
 				message: `docs: correct spelling of CHANGELOG`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "docs: correct spelling of CHANGELOG",
 				Body:   "",
 				Footer: []string{},
@@ -426,7 +426,7 @@ BREAKING CHANGE: refactor to use JavaScript features not available in Node 6.`,
 			args: args{
 				message: `feat(lang): add polish language`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "feat(lang): add polish language",
 				Body:   "",
 				Footer: []string{},
@@ -465,7 +465,7 @@ app.use({})
 Reviewed-by: Z
 Refs: #123`,
 			},
-			want: Message{
+			want: &Message{
 				Header: "fix: prevent racing of requests",
 				Body: `Introduce a request id and a reference to latest request. Dismiss
 incoming responses other than from latest request.

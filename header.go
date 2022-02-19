@@ -6,15 +6,10 @@ import (
 )
 
 type Header struct {
-	raw       string
 	Type      string
 	Scope     string
 	Subject   string
 	Important bool
-}
-
-func (h *Header) String() string {
-	return h.raw
 }
 
 var (
@@ -25,7 +20,7 @@ var (
 func parseHeader(txt string) Header {
 	headerMatchers := headerPattern.FindStringSubmatch(txt)
 	revertHeaderMatchers := revertHeaderPattern.FindStringSubmatch(txt)
-	header := Header{raw: txt}
+	header := Header{}
 
 	if len(headerMatchers) != 0 { // conventional commit
 		header.Type = strings.TrimSpace(strings.ToLower(headerMatchers[1]))
